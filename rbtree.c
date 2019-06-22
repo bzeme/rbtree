@@ -4,12 +4,17 @@
 #include <assert.h>
 
 /**
- * RB-tree: http://en.wikipedia.org/wiki/Rbtree
+ * RB-tree:
  *  1. Each node is either red or black.
  *  2. The root is black.
  *  3. All leaves (NIL) are black.
  *  4. If a node is red, then both its children are black.
  *  5. Every path from a given node to any of its descendant NIL nodes contains the same number of black nodes.
+ * 
+ * Reference:
+ *   -  http://en.wikipedia.org/wiki/Rbtree
+ *   -  https://www.geeksforgeeks.org/red-black-tree-set-1-introduction-2/
+ * 
  */
 
 void *rb_insert_item(void *item, struct rb_tree *tree, struct rb_ops *ops)
