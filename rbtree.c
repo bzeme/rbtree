@@ -34,17 +34,22 @@ void *rb_insert_item(void *item, struct rb_tree *tree, struct rb_ops *ops)
 
         parent = *slot;
 
-        if (result > 0) {
+        if (result > 0)
+        {
             slot = &parent->left;
-        } else if (result < 0) {
+        }
+        else if (result < 0)
+        {
             slot = &parent->right;
-        } else {
+        }
+        else
+        {
             /* found the identical key */
             return tmpi;
         }
     }
 
-    struct rb_node * node = item + offset;
+    struct rb_node *node = item + offset;
     rb_link(node, parent, slot, tree);
 
     return item;
@@ -52,20 +57,26 @@ void *rb_insert_item(void *item, struct rb_tree *tree, struct rb_ops *ops)
 
 void *rb_search_item(void *key, struct rb_tree *tree, struct rb_ops *ops)
 {
-    struct rb_node * node = tree->root;
+    struct rb_node *node = tree->root;
     size_t offset = ops->offset;
     void *cmp_ctx = ops->context;
     rb_compare_key_fn compare = ops->compare_key;
-    
-    while (node) {
+
+    while (node)
+    {
         void *item = node - offset;
         int result = compare(item, key, cmp_ctx);
 
-        if (result > 0) {
+        if (result > 0)
+        {
             node = node->left;
-        } else if (result < 0) {
+        }
+        else if (result < 0)
+        {
             node = node->right;
-        } else {
+        }
+        else
+        {
             return item;
         }
     }
@@ -73,65 +84,89 @@ void *rb_search_item(void *key, struct rb_tree *tree, struct rb_ops *ops)
     return NULL;
 }
 
-void *rb_search_item_ge(void *key, struct rb_tree *tree, struct rb_ops *ops) {
-    struct rb_node * node = tree->root, * parent = NULL;
+void *rb_search_item_ge(void *key, struct rb_tree *tree, struct rb_ops *ops)
+{
+    struct rb_node *node = tree->root, *parent = NULL;
     size_t offset = ops->offset;
     void *cmp_ctx = ops->context;
     rb_compare_key_fn compare = ops->compare_key;
     int result;
-    
-    while (node) {
+
+    while (node)
+    {
         void *item = node - offset;
         result = compare(item, key, cmp_ctx);
         parent = node;
 
-        if (result > 0) {
+        if (result > 0)
+        {
             node = node->left;
-        } else if (result < 0) {
+        }
+        else if (result < 0)
+        {
             node = node->right;
-        } else {
+        }
+        else
+        {
             return item;
         }
     }
 
-    if (parent == NULL) {
+    if (parent == NULL)
+    {
         return NULL;
-    } else if (result > 0) {
+    }
+    else if (result > 0)
+    {
         /* key < parent, parent->left == NULL */
         return parent;
-    } else {
+    }
+    else
+    {
         /* parent < key */
         return rb_next(parent);
     }
 }
 
-void *rb_search_item_le(void *key, struct rb_tree *tree, struct rb_ops *ops) {
-    struct rb_node * node = tree->root, * parent = NULL;
+void *rb_search_item_le(void *key, struct rb_tree *tree, struct rb_ops *ops)
+{
+    struct rb_node *node = tree->root, *parent = NULL;
     size_t offset = ops->offset;
     void *cmp_ctx = ops->context;
     rb_compare_key_fn compare = ops->compare_key;
     int result;
-    
-    while (node) {
+
+    while (node)
+    {
         void *item = node - offset;
         result = compare(item, key, cmp_ctx);
         parent = node;
 
-        if (result > 0) {
+        if (result > 0)
+        {
             node = node->left;
-        } else if (result < 0) {
+        }
+        else if (result < 0)
+        {
             node = node->right;
-        } else {
+        }
+        else
+        {
             return item;
         }
     }
 
-    if (parent == NULL) {
+    if (parent == NULL)
+    {
         return NULL;
-    } else if (result < 0) {
+    }
+    else if (result < 0)
+    {
         /* key < parent*/
         return rb_prev(parent);
-    } else {
+    }
+    else
+    {
         /* parent < key */
         return parent;
     }
@@ -252,7 +287,9 @@ static inline void _rb_link_color(struct rb_node *node, struct rb_tree *tree)
                     _rb_rotate_left(parent, tree);
                     node = parent;
                     parent = node->parent;
-                } else {
+                }
+                else
+                {
                     assert(parent->left == node);
                 }
 
@@ -286,7 +323,9 @@ static inline void _rb_link_color(struct rb_node *node, struct rb_tree *tree)
                     _rb_rotate_right(parent, tree);
                     node = parent;
                     parent = node->parent;
-                } else {
+                }
+                else
+                {
                     assert(parent->right == node);
                 }
 
@@ -417,7 +456,7 @@ static inline void _rb_remove_color(struct rb_node *node, struct rb_node *parent
                 rb_set_black(sibling->right);
                 _rb_rotate_left(parent, tree);
 
-                 /*
+                /*
                   * we are going to end the loop
                   * make sure that the root node is always black in the end of the function
                   */
@@ -438,7 +477,7 @@ static inline void _rb_remove_color(struct rb_node *node, struct rb_node *parent
 
                 sibling = parent->left;
             }
-            
+
             if (rb_is_black(sibling->right) && rb_is_black(sibling->left))
             {
                 /* case 3 and case 4 */
@@ -549,9 +588,12 @@ void rb_remove(struct rb_node *node, struct rb_tree *tree)
         /* remove the node */
         if (parent)
         {
-            if (parent->left == node) {
+            if (parent->left == node)
+            {
                 parent->left = child;
-            } else {
+            }
+            else
+            {
                 assert(parent->right == node);
                 parent->right = child;
             }
@@ -567,7 +609,8 @@ void rb_remove(struct rb_node *node, struct rb_tree *tree)
         }
 
         /* replace the old node with the successor */
-        if (old == parent) {
+        if (old == parent)
+        {
             /* If the old node is the parent.
              * We point it to the new node now */
             parent = node;
@@ -657,42 +700,53 @@ struct rb_node *rb_last(struct rb_tree *tree)
     return NULL;
 }
 
-struct rb_node *rb_postorder_next(struct rb_node *node) {
-    struct rb_node* parent = node->parent;
+struct rb_node *rb_postorder_next(struct rb_node *node)
+{
+    struct rb_node *parent = node->parent;
 
-    if (parent && parent->left == node && parent->right) {
+    if (parent && parent->left == node && parent->right)
+    {
         return rb_leftmost(parent->right);
-    } else {
+    }
+    else
+    {
         return parent;
     }
 }
 
-struct rb_node *rb_postorder_prev(struct rb_node *node) {
-    struct rb_node* parent;
+struct rb_node *rb_postorder_prev(struct rb_node *node)
+{
+    struct rb_node *parent;
 
-    if (node->right) {
+    if (node->right)
+    {
         return node->right;
     }
 
-    while ((parent = node->parent) && (!parent->left || parent->left == node)) {
+    while ((parent = node->parent) && (!parent->left || parent->left == node))
+    {
         node = parent;
     }
 
-    if (parent) {
+    if (parent)
+    {
         return parent->left;
     }
 
     return NULL;
 }
 
-struct rb_node *rb_postorder_first(struct rb_tree *tree) {
-    if (tree->root) {
+struct rb_node *rb_postorder_first(struct rb_tree *tree)
+{
+    if (tree->root)
+    {
         return rb_leftmost(tree->root);
     }
 
     return NULL;
 }
 
-struct rb_node *rb_postorder_last(struct rb_tree *tree) {
+struct rb_node *rb_postorder_last(struct rb_tree *tree)
+{
     return tree->root;
 }
