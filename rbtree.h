@@ -37,6 +37,8 @@ struct rb_ops
 
 extern void *rb_insert_item(void *item, struct rb_tree *tree, struct rb_ops *ops);
 extern void *rb_search_item(void *key, struct rb_tree *tree, struct rb_ops *ops);
+extern void *rb_search_item_ge(void *key, struct rb_tree *tree, struct rb_ops *ops);
+extern void *rb_search_item_le(void *key, struct rb_tree *tree, struct rb_ops *ops);
 
 /* link the *node* to the *parent* at the *slot* */
 extern void rb_link(struct rb_node *node, struct rb_node *parent, struct rb_node **slot, struct rb_tree *tree);
@@ -51,3 +53,9 @@ extern struct rb_node *rb_prev(struct rb_node *node);
 
 extern struct rb_node *rb_first(struct rb_tree *tree);
 extern struct rb_node *rb_last(struct rb_tree *tree);
+
+extern struct rb_node *rb_postorder_next(struct rb_node *node);
+extern struct rb_node *rb_postorder_prev(struct rb_node *node);
+
+extern struct rb_node *rb_postorder_first(struct rb_tree *tree);
+extern struct rb_node *rb_postorder_last(struct rb_tree *tree);

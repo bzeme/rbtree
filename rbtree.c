@@ -73,6 +73,70 @@ void *rb_search_item(void *key, struct rb_tree *tree, struct rb_ops *ops)
     return NULL;
 }
 
+void *rb_search_item_ge(void *key, struct rb_tree *tree, struct rb_ops *ops) {
+    struct rb_node * node = tree->root, * parent = NULL;
+    size_t offset = ops->offset;
+    void *cmp_ctx = ops->context;
+    rb_compare_key_fn compare = ops->compare_key;
+    int result;
+    
+    while (node) {
+        void *item = node - offset;
+        result = compare(item, key, cmp_ctx);
+        parent = node;
+
+        if (result > 0) {
+            node = node->left;
+        } else if (result < 0) {
+            node = node->right;
+        } else {
+            return item;
+        }
+    }
+
+    if (parent == NULL) {
+        return NULL;
+    } else if (result > 0) {
+        /* key < parent, parent->left == NULL */
+        return parent;
+    } else {
+        /* parent < key */
+        return rb_next(parent);
+    }
+}
+
+void *rb_search_item_le(void *key, struct rb_tree *tree, struct rb_ops *ops) {
+    struct rb_node * node = tree->root, * parent = NULL;
+    size_t offset = ops->offset;
+    void *cmp_ctx = ops->context;
+    rb_compare_key_fn compare = ops->compare_key;
+    int result;
+    
+    while (node) {
+        void *item = node - offset;
+        result = compare(item, key, cmp_ctx);
+        parent = node;
+
+        if (result > 0) {
+            node = node->left;
+        } else if (result < 0) {
+            node = node->right;
+        } else {
+            return item;
+        }
+    }
+
+    if (parent == NULL) {
+        return NULL;
+    } else if (result < 0) {
+        /* key < parent*/
+        return rb_prev(parent);
+    } else {
+        /* parent < key */
+        return parent;
+    }
+}
+
 #define rb_set_red(node) ((node)->color = RB_RED)
 #define rb_set_black(node) ((node)->color = RB_BLACK)
 
@@ -591,4 +655,44 @@ struct rb_node *rb_last(struct rb_tree *tree)
     }
 
     return NULL;
+}
+
+struct rb_node *rb_postorder_next(struct rb_node *node) {
+    struct rb_node* parent = node->parent;
+
+    if (parent && parent->left == node && parent->right) {
+        return rb_leftmost(parent->right);
+    } else {
+        return parent;
+    }
+}
+
+struct rb_node *rb_postorder_prev(struct rb_node *node) {
+    struct rb_node* parent;
+
+    if (node->right) {
+        return node->right;
+    }
+
+    while ((parent = node->parent) && (!parent->left || parent->left == node)) {
+        node = parent;
+    }
+
+    if (parent) {
+        return parent->left;
+    }
+
+    return NULL;
+}
+
+struct rb_node *rb_postorder_first(struct rb_tree *tree) {
+    if (tree->root) {
+        return rb_leftmost(tree->root);
+    }
+
+    return NULL;
+}
+
+struct rb_node *rb_postorder_last(struct rb_tree *tree) {
+    return tree->root;
 }
