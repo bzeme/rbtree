@@ -36,3 +36,14 @@ void list_add_tail(struct list *item, struct list *head)
     tail->next = item;
     head->prev = item;
 }
+
+void list_replace(struct list *victim, struct list *item) {
+    struct list *prev = item->prev;
+    struct list *next = item->next;
+
+    item->next = next;
+    item->prev = prev;
+
+    prev->next = item;
+    next->prev = item;
+}
